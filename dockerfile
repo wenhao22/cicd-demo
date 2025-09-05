@@ -12,6 +12,15 @@ LABEL description="Dockerfile for deploying to Beanstalk needs dockerrun.aws.jso
 # Set the working directory to /app
 WORKDIR /app
 
+COPY mvnw .
+COPY mvnw.cmd .
+COPY .mvn .mvn
+COPY src src
+COPY pom.xml
+RUN ./mvnw package -DskipTests=true
+
+FROM openjdk:17-jdk-oracle
+
 # Copy the Spring Boot application JAR file into the Docker image
 COPY target/cicd-demo-0.0.1-SNAPSHOT.jar /app/cicd-demo-0.0.1-SNAPSHOT.jar
 
@@ -19,11 +28,11 @@ COPY target/cicd-demo-0.0.1-SNAPSHOT.jar /app/cicd-demo-0.0.1-SNAPSHOT.jar
 #COPY target/cicd-demo-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/cicd-demo-0.0.1-SNAPSHOT.war
 
 # Set environment variables
-#ENV SERVER_PORT=5000
+ENV SERVER_PORT=8085
 # ENV LOGGING_LEVEL=INFO
 
 # Expose the port that the Spring Boot application is listening on
-EXPOSE 5000
+EXPOSE {SERVER_PORT}
 
 # Run the Spring Boot application when the container starts
 CMD ["java", "-jar", "cicd-demo-0.0.1-SNAPSHOT.jar"]
